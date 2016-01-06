@@ -11,7 +11,13 @@
 |
 */
 
-Route::get('/', 'StaticController@index');
+Route::get('/find-budget', 'BudgetController@find');
+Route::get('/create-budget', 'BudgetController@create');
+Route::get('/all-budgets', 'BudgetController@all');
+Route::get('/all-budget-shares', 'BudgetController@shares');
+Route::get('/all-budget-items', 'BudgetController@items');
+
+Route::get('/get-info', 'CustomerController@info');
 
 /*
 |--------------------------------------------------------------------------
