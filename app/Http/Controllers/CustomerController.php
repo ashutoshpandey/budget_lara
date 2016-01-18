@@ -10,9 +10,9 @@ class CustomerController extends Controller
 
     public function info()
     {
-        $phone = Input::get('phone');
+        $id = Input::get('id');
 
-        $customer = Customer::where('phone', $phone)->first();
+        $customer = Customer::where('id', $id)->first();
 
         if(is_null($customer))
             return json_encode(array('message'=>'empty'));
@@ -32,7 +32,7 @@ class CustomerController extends Controller
 
             $customer->name = Input::get('name');
             $customer->phone = Input::get('phone');
-            $customer->password = Input::get('password');
+            $customer->password = '';//Input::get('password');
             $customer->photo = 'default';
             $customer->status = 'active';
             $customer->created_at = date('Y-m-d h:i:s');

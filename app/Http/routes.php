@@ -17,8 +17,8 @@ Route::get('/all-budgets', 'BudgetController@all');
 Route::get('/all-budget-shares', 'BudgetController@shares');
 Route::get('/all-budget-items', 'BudgetController@items');
 
-Route::get('/get-info', 'CustomerController@info');
-
+Route::get('/get-customer-info', 'CustomerController@info');
+Route::get('/create-customer', 'CustomerController@create');
 /*
 |--------------------------------------------------------------------------
 | Application Routes
