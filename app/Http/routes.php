@@ -12,13 +12,13 @@
 */
 
 Route::get('/find-budget', 'BudgetController@find');
-Route::get('/create-budget', 'BudgetController@create');
+Route::post('/create-budget', 'BudgetController@create');
 Route::get('/all-budgets', 'BudgetController@all');
 Route::get('/all-budget-shares', 'BudgetController@shares');
 Route::get('/all-budget-items', 'BudgetController@items');
 
 Route::get('/get-customer-info', 'CustomerController@info');
-Route::get('/create-customer', 'CustomerController@create');
+Route::post('/create-customer', 'CustomerController@create');
 /*
 |--------------------------------------------------------------------------
 | Application Routes

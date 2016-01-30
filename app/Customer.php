@@ -6,18 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    public function budgets()
-    {
-        return $this->hasMany('App\Budget', 'customer_id');
-    }
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'phone', 'password',
+    ];
 
-    public function budgetShares()
-    {
-        return $this->hasMany('App\BudgetShare', 'customer_id');
-    }
-
-    public function budgetItems()
-    {
-        return $this->hasMany('App\BudgetItem', 'customer_id');
-    }
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password',
+    ];
 }

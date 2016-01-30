@@ -1,18 +1,21 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Budget;
+use Illuminate\Http\Request;
+
 class BudgetController extends Controller
 {
     function __construct()
     {
-        View::share('root', URL::to('/'));
+        //View::share('root', URL::to('/'));
     }
 
-    public function all()
+    public function all(Request $request)
     {
-        $customer_id = Input::get('customer_id');
+        $customer_id = $request->input('customer_id');
 
-        $budgets = Budget::where('customer_id', $customer_id)->all();
+        $budgets = Budget::where(array('customer_id' => $customer_id))->all();
 
         if(is_null($budgets))
             return json_encode(array('message'=>'empty'));
@@ -20,11 +23,11 @@ class BudgetController extends Controller
             return json_encode(array('message'=>'found', 'budgets' => $budgets->toArray()));
     }
 
-    public function shares()
+    public function shares(Request $request)
     {
-        $customer_id = Input::get('customer_id');
+        $customer_id = $request->input('customer_id');
 
-        $budgetShares = BudgetShare::where('customer_id', '=', $customer_id)->all();
+        $budgetShares = BudgetShare::where(array('customer_id' => $customer_id))->all();
 
         if(is_null($budgetShares))
             return json_encode(array('message'=>'empty'));
@@ -32,11 +35,11 @@ class BudgetController extends Controller
             return json_encode(array('message'=>'found', 'budgetShares' => $budgetShares->toArray()));
     }
 
-    public function items()
+    public function items(Request $request)
     {
-        $budget_id = Input::get('budget_id');
+        $budget_id = $request->input('budget_id');
 
-        $budgetItems = BudgetItem::where('budget_id', $budget_id)->where('status', 'active')->all();
+        $budgetItems = BudgetItem::where(array('budget_id' => $budget_id, 'status' => 'active'))->all();
 
         if(is_null($budgetItems))
             return json_encode(array('message'=>'empty'));
@@ -44,15 +47,15 @@ class BudgetController extends Controller
             return json_encode(array('message'=>'found', 'budgetItems' => $budgetItems->toArray()));
     }
 
-    public function addItem()
+    public function addItem(Request $request)
     {
         $budgetItem = new BudgetItem;
 
-        $budgetItem->customer_id = Input::get('customer_id');
-        $budgetItem->budget_id = Input::get('budget_id');
-        $budgetItem->name = Input::get('name');
-        $budgetItem->price = Input::get('price');
-        $budgetItem->remarks = Input::get('remarks');
+        $budgetItem->customer_id = $request->input('customer_id');
+        $budgetItem->budget_id = $request->input('budget_id');
+        $budgetItem->name = $request->input('name');
+        $budgetItem->price = $request->input('price');
+        $budgetItem->remarks = $request->input('remarks');
         $budgetItem->status = 'active';
         $budgetItem->created_at = date('Y-m-d h:i:s');
         $budgetItem->updated_at = date('Y-m-d h:i:s');
@@ -62,11 +65,11 @@ class BudgetController extends Controller
         return json_encode(array('message'=>'done'));
     }
 
-    public function removeItem()
+    public function removeItem(Request $request)
     {
-        $id = Input::get('id');
+        $id = $request->input('id');
 
-        $budgetItem = BudgetItem::where('id', $id)->first();
+        $budgetItem = BudgetItem::find(array('id' => $id));
 
         if(is_null($budgetItem)) {
 
@@ -80,11 +83,11 @@ class BudgetController extends Controller
             return json_encode(array('message'=>'notfound'));
     }
 
-    public function find()
+    public function find(Request $request)
     {
-        $budget_id = Input::get('budget_id');
+        $budget_id = $request->input('budget_id');
 
-        $budget = Budget::where('budget_id', $budget_id)->first();
+        $budget = Budget::find(array('budget_id' => $budget_id));
 
         if(is_null($budget))
             return json_encode(array('message'=>'empty'));
@@ -92,21 +95,36 @@ class BudgetController extends Controller
             return json_encode(array('message'=>'found', 'budget' => $budget));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $customerId = $request->input('customer_id');
+        $budgetType = $request->input('budget_type');
+        $name = $request->input('name');
+
         $budget = new Budget;
 
-        $budget->customer_id = Input::get('customer_id');
-        $budget->budget_type = Input::get('budget_type');
-        $budget->remarks = Input::get('remarks');
-        $budget->status = 'active';
-        $budget->start_date = date('Y-m-d h:i:s', Input::get('start_date'));
-        $budget->end_date = date('Y-m-d h:i:s', Input::get('end_date'));
-        $budget->created_at = date('Y-m-d h:i:s');
-        $budget->updated_at = date('Y-m-d h:i:s');
+        $existingBudget = Budget::where(array('customer_id' => $customerId, 'name' => $name))->first();
 
-        $budget->save();
+        if(isset($existingBudget))
+            return json_encode(array('message' => 'duplicate'));
+        else {
+            $budget->customer_id = $customerId;
+            $budget->name = $name;
+            $budget->budget_type = $budgetType;
+            $budget->remarks = '';// $request->input('remarks');
+            $budget->status = 'active';
 
-        return json_encode(array('message'=>'done'));
+            if ($budgetType == "date range") {
+                $budget->start_date = date('Y-m-d h:i:s', $request->input('start_date'));
+                $budget->end_date = date('Y-m-d h:i:s', $request->input('end_date'));
+            }
+
+            $budget->created_at = date('Y-m-d h:i:s');
+            $budget->updated_at = date('Y-m-d h:i:s');
+
+            $budget->save();
+
+            return json_encode(array('message' => 'done'));
+        }
     }
 }

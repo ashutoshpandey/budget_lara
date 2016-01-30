@@ -15,8 +15,10 @@ class CreateBudgetsTables extends Migration
         Schema::create('budgets', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('customer_id')->unsigned();
+            $table->string('name', 255);
             $table->string('budget_type', 255);
             $table->string('remarks', 255);
+            $table->string('status', 20);
             $table->date('start_date');
             $table->date('end_date');
             $table->timestamps();

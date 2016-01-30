@@ -1,38 +1,42 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Customer;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
 class CustomerController extends Controller
 {
     function __construct()
     {
-        View::share('root', URL::to('/'));
+        //View::share('root', URL::to('/'));
     }
 
-    public function info()
+    public function info(Request $request)
     {
-        $id = Input::get('id');
+        $id = $request->input('id');
 
-        $customer = Customer::where('id', $id)->first();
+        $customer = Customer::find(array('id' => $id));
 
-        if(is_null($customer))
+        if(!isset($customer))
             return json_encode(array('message'=>'empty'));
         else
             return json_encode(array('message'=>'found', 'customer' => $customer));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $phone = Input::get('phone');
+        $phone = $request->input('phone');
 
         $customer = Customer::where('phone', $phone)->first();
 
-        if(is_null($customer)) {
+        if(isset($customer)) {
 
             $customer = new Customer;
 
-            $customer->name = Input::get('name');
-            $customer->phone = Input::get('phone');
-            $customer->password = '';//Input::get('password');
+            $customer->name = $request->input('name');
+            $customer->phone = $request->input('phone');
+            $customer->password = '';//$request->input('password');
             $customer->photo = 'default';
             $customer->status = 'active';
             $customer->created_at = date('Y-m-d h:i:s');
