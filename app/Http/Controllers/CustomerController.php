@@ -30,7 +30,7 @@ class CustomerController extends Controller
 
         $customer = Customer::where('phone', $phone)->first();
 
-        if(isset($customer)) {
+        if(!isset($customer)) {
 
             $customer = new Customer;
 
@@ -44,7 +44,7 @@ class CustomerController extends Controller
 
             $customer->save();
 
-            return json_encode(array('message' => 'done'));
+            return json_encode(array('message' => 'done', 'customer' => $customer));
         }
         else
             return json_encode(array('message' => 'duplicate'));
