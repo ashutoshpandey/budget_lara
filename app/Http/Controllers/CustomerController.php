@@ -16,12 +16,12 @@ class CustomerController extends Controller
     {
         $id = $request->input('id');
 
-        $customer = Customer::find(array('id' => $id));
+        $customer = Customer::where(array('id' => $id))->first();
 
-        if(!isset($customer))
-            return json_encode(array('message'=>'empty'));
-        else
+        if(isset($customer))
             return json_encode(array('message'=>'found', 'customer' => $customer));
+        else
+            return json_encode(array('message'=>'empty'));
     }
 
     public function create(Request $request)
@@ -48,5 +48,24 @@ class CustomerController extends Controller
         }
         else
             return json_encode(array('message' => 'duplicate'));
+    }
+
+    public function update(Request $request)
+    {
+        $customerId = $request->input('customerId');
+
+        $customer = Customer::where('id', $customerId)->first();
+
+        if(isset($customer)) {
+
+            $customer->name = $request->input('name');
+            $customer->phone = $request->input('phone');
+
+            $customer->save();
+
+            return json_encode(array('message' => 'done', 'customer' => $customer));
+        }
+        else
+            return json_encode(array('message' => 'invalid'));
     }
 }

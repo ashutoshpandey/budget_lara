@@ -24,6 +24,7 @@ Route::get('/all-budget-items', 'BudgetController@items');
 
 Route::get('/get-customer-info', 'CustomerController@info');
 Route::post('/create-customer', 'CustomerController@create');
+Route::post('/update-customer', 'CustomerController@update');
 /*
 |--------------------------------------------------------------------------
 | Application Routes
