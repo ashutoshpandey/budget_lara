@@ -6,6 +6,8 @@ use App\BudgetShare;
 use App\BudgetItem;
 use App\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BudgetController extends Controller
 {
@@ -43,6 +45,32 @@ class BudgetController extends Controller
         $budget_id = $request->input('budget_id');
 
         $budgetItems = BudgetItem::where(array('budget_id' => $budget_id, 'status' => 'active'))->with('Customer')->get();
+
+        if(isset($budgetItems) && count($budgetItems)>0)
+            return json_encode(array('message'=>'found', 'budgetItems' => $budgetItems));
+        else
+            return json_encode(array('message'=>'empty'));
+    }
+
+    public function itemsFiltered(Request $request)
+    {
+        $budget_id = $request->input('budget_id');
+        $yearMonth = $request->input('yearMonth');
+
+        $arYearMonth = explode(",", $yearMonth);
+        $year = $arYearMonth[0];
+        $month = intval($arYearMonth[1])+1;
+
+/*        DB::listen(function($sql) {
+            print_r($sql);
+        });*/
+
+        $budgetItems = BudgetItem::where('budget_id' , $budget_id)
+                                ->where(DB::raw('year(entry_date)'), '=', $year)
+                                ->where(DB::raw('month(entry_date)'), '=' , $month)
+                                ->where('status' , 'active')
+                                ->with('Customer')->get();
+
 
         if(isset($budgetItems) && count($budgetItems)>0)
             return json_encode(array('message'=>'found', 'budgetItems' => $budgetItems));

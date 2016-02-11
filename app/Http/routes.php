@@ -21,6 +21,7 @@ Route::post('/share-budget', 'BudgetController@share');
 
 Route::post('/add-budget-item', 'BudgetController@addItem');
 Route::get('/all-budget-items', 'BudgetController@items');
+Route::get('/all-budget-items-filtered', 'BudgetController@itemsFiltered');
 
 Route::get('/get-customer-info', 'CustomerController@info');
 Route::post('/create-customer', 'CustomerController@create');
