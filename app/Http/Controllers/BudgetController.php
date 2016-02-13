@@ -22,7 +22,7 @@ class BudgetController extends Controller
 
         $budgets = Budget::where(array('customer_id' => $customer_id))->get();
 
-        if(!isset($budgets))
+        if(!isset($budgets) || count($budgets)==0)
             return json_encode(array('message'=>'empty'));
         else
             return json_encode(array('message'=>'found', 'budgets' => $budgets->toArray()));
@@ -32,10 +32,18 @@ class BudgetController extends Controller
     {
         $customer_id = $request->input('customer_id');
 
-        $budgetShares = BudgetShare::where(array('from_customer_id' => $customer_id))->get();
+        $budgetShares1 = BudgetShare::where(array('from_customer_id' => $customer_id))->with('budget')->with('toCustomer')->get();
+        $budgetShares2 = BudgetShare::where(array('to_customer_id' => $customer_id))->with('budget')->with('fromCustomer')->get();
 
-        if(isset($budgetShares))
-            return json_encode(array('message'=>'found', 'budgetShares' => $budgetShares->toArray()));
+        if(isset($budgetShares1) && isset($budgetShares2))
+            $budgetShares = array_merge($budgetShares1->toArray(), $budgetShares2->toArray());
+        else if(isset($budgetShares1))
+            $budgetShares = $budgetShares1->toArray();
+        else if(isset($budgetShares2))
+            $budgetShares = $budgetShares2->toArray();
+
+        if(isset($budgetShares) && count($budgetShares)>0)
+            return json_encode(array('message'=>'found', 'budgetShares' => $budgetShares));
         else
             return json_encode(array('message'=>'empty'));
     }
@@ -119,11 +127,18 @@ class BudgetController extends Controller
     {
         $to_customer_id = $request->input('to_customer_id');
         $from_customer_id = $request->input('from_customer_id');
+        $budget_id = $request->input('budget_id');
 
         $customer = Customer::where('id', $to_customer_id)->first();
 
         if(isset($customer)) {
-            $existingBudgetShare = BudgetShare::where(array('from_customer_id' => $from_customer_id, 'to_customer_id' => $to_customer_id))->first();
+            $existingBudgetShare = BudgetShare::where(
+                array(
+                    'from_customer_id' => $from_customer_id,
+                    'to_customer_id' => $to_customer_id,
+                    'budget_id' => $budget_id
+                )
+            )->first();
 
             if (isset($existingBudgetShare))
                 return json_encode(array('message' => 'duplicate'));
@@ -132,7 +147,7 @@ class BudgetController extends Controller
 
                 $budgetShare->from_customer_id = $from_customer_id;
                 $budgetShare->to_customer_id = $to_customer_id;
-                $budgetShare->budget_id = $request->input('budget_id');
+                $budgetShare->budget_id = $budget_id;
                 $budgetShare->status = 'active';
                 $budgetShare->created_at = date('Y-m-d h:i:s');
                 $budgetShare->updated_at = date('Y-m-d h:i:s');
