@@ -15,7 +15,7 @@ class CategoryController extends Controller
     {
         $customer_id = $request->input('customer_id');
 
-        $categories = Category::where(array('customer_id' => $customer_id))->get();
+        $categories = Category::where(array('customer_id' => $customer_id, 'status' => 'active'))->get();
 
         if(!isset($categories) || count($categories)==0)
             return json_encode(array('message'=>'empty'));
@@ -27,6 +27,8 @@ class CategoryController extends Controller
     {
         $customer_id = $request->input('customer_id');
         $name = $request->input('name');
+
+        $name = strtolower($name);
 
         $existingCategory = Category::where(array('customer_id' => $customer_id, 'name' => $name ))->first();
 
@@ -51,11 +53,11 @@ class CategoryController extends Controller
     {
         $id = $request->input('id');
 
-        $category = Category::find(array('id' => $id));
+        $category = Category::where(array('id' => $id))->first();
 
         if(isset($category)) {
 
-            $category->remove();
+            $category->delete();
 
             return json_encode(array('message' => 'done'));
         }

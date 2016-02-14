@@ -92,6 +92,7 @@ class BudgetController extends Controller
 
         $budgetItem->customer_id = $request->input('customer_id');
         $budgetItem->budget_id = $request->input('budget_id');
+        $budgetItem->category_id = $request->input('category_id');
         $budgetItem->name = $request->input('name');
         $budgetItem->price = $request->input('price');
         $budgetItem->remarks = '';//$request->input('remarks');

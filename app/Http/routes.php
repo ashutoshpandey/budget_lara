@@ -25,7 +25,8 @@ Route::get('/all-budget-items-filtered', 'BudgetController@itemsFiltered');
 Route::get('/remove-item', 'BudgetController@removeItem');
 
 Route::post('/add-category', 'CategoryController@add');
-Route::get('/all-categories', 'CategoryController@list');
+Route::post('/remove-category', 'CategoryController@remove');
+Route::get('/all-categories', 'CategoryController@all');
 
 Route::get('/get-customer-info', 'CustomerController@info');
 Route::post('/create-customer', 'CustomerController@create');
