@@ -107,9 +107,9 @@ class BudgetController extends Controller
 
     public function removeItem(Request $request)
     {
-        $id = $request->input('id');
+        $id = $request->input('item_id');
 
-        $budgetItem = BudgetItem::find(array('id' => $id));
+        $budgetItem = BudgetItem::where('id' , $id)->first();
 
         if(isset($budgetItem)) {
 
@@ -117,10 +117,10 @@ class BudgetController extends Controller
 
             $budgetItem->save();
 
-            return json_encode(array('message' => 'empty'));
+            return json_encode(array('message' => 'removed'));
         }
         else
-            return json_encode(array('message'=>'notfound'));
+            return json_encode(array('message'=>'notfound', 'id' => $id));
     }
 
     public function share(Request $request)
