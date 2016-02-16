@@ -28,6 +28,10 @@ Route::post('/add-category', 'CategoryController@add');
 Route::post('/remove-category', 'CategoryController@remove');
 Route::get('/all-categories', 'CategoryController@all');
 
+Route::post('/add-payment-mode', 'PaymentModeController@add');
+Route::post('/remove-payment-mode', 'PaymentModeController@remove');
+Route::get('/all-payment-modes', 'PaymentModeController@all');
+
 Route::get('/get-customer-info', 'CustomerController@info');
 Route::post('/create-customer', 'CustomerController@create');
 Route::post('/update-customer', 'CustomerController@update');

@@ -52,7 +52,7 @@ class BudgetController extends Controller
     {
         $budget_id = $request->input('budget_id');
 
-        $budgetItems = BudgetItem::where(array('budget_id' => $budget_id, 'status' => 'active'))->with('Customer')->get();
+        $budgetItems = BudgetItem::where(array('budget_id' => $budget_id, 'status' => 'active'))->with('Customer')->with('Category')->get();
 
         if(isset($budgetItems) && count($budgetItems)>0)
             return json_encode(array('message'=>'found', 'budgetItems' => $budgetItems));
@@ -88,13 +88,19 @@ class BudgetController extends Controller
 
     public function addItem(Request $request)
     {
+        $categoryId = $request->input('category_id');
+
         $budgetItem = new BudgetItem;
 
         $budgetItem->customer_id = $request->input('customer_id');
         $budgetItem->budget_id = $request->input('budget_id');
-        $budgetItem->category_id = $request->input('category_id');
+
+        if($categoryId>0)
+            $budgetItem->category_id = $categoryId;
+
         $budgetItem->name = $request->input('name');
         $budgetItem->price = $request->input('price');
+        $budgetItem->payment_mode = $request->input('payment_mode');
         $budgetItem->remarks = '';//$request->input('remarks');
         $budgetItem->status = 'active';
         $budgetItem->entry_date = date('Y-m-d h:i:s', strtotime($request->input('date')));
