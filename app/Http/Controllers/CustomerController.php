@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Category;
+use App\PaymentMode;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,8 +20,18 @@ class CustomerController extends Controller
 
         $customer = Customer::where(array('id' => $id))->first();
 
+        $categoryCount = Category::where(array('customer_id' => $id, 'status' => 'active'))->count();
+        $paymentModeCount = PaymentMode::where(array('customer_id' => $id, 'status' => 'active'))->count();
+
         if(isset($customer))
-            return json_encode(array('message'=>'found', 'customer' => $customer));
+            return json_encode(
+                array(
+                    'message'=>'found',
+                    'customer' => $customer,
+                    'category_count' => $categoryCount,
+                    'payment_mode_count' => $paymentModeCount
+                )
+            );
         else
             return json_encode(array('message'=>'empty'));
     }
