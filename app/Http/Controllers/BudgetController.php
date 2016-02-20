@@ -52,7 +52,7 @@ class BudgetController extends Controller
     {
         $budget_id = $request->input('budget_id');
 
-        $budgetItems = BudgetItem::where(array('budget_id' => $budget_id, 'status' => 'active'))->with('Customer')->with('Category')->get();
+        $budgetItems = BudgetItem::where(array('budget_id' => $budget_id, 'status' => 'active'))->with('Category')->with('Customer')->get();
 
         if(isset($budgetItems) && count($budgetItems)>0)
             return json_encode(array('message'=>'found', 'budgetItems' => $budgetItems));
@@ -77,6 +77,7 @@ class BudgetController extends Controller
                                 ->where(DB::raw('year(entry_date)'), '=', $year)
                                 ->where(DB::raw('month(entry_date)'), '=' , $month)
                                 ->where('status' , 'active')
+                                ->with('Category')
                                 ->with('Customer')->get();
 
 
