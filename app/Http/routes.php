@@ -15,9 +15,11 @@ Route::get('/find-budget', 'BudgetController@find');
 Route::post('/create-budget', 'BudgetController@create');
 Route::post('/update-budget', 'BudgetController@update');
 Route::get('/all-budgets', 'BudgetController@all');
+Route::get('/remove-budget', 'BudgetController@removeBudget');
 
 Route::get('/all-budget-shares', 'BudgetController@shares');
 Route::post('/share-budget', 'BudgetController@share');
+Route::get('/remove-budget-share', 'BudgetController@removeBudgetShare');
 
 Route::post('/add-budget-item', 'BudgetController@addItem');
 Route::get('/all-budget-items', 'BudgetController@items');

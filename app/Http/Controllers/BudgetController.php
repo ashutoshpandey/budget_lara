@@ -20,7 +20,7 @@ class BudgetController extends Controller
     {
         $customer_id = $request->input('customer_id');
 
-        $budgets = Budget::where(array('customer_id' => $customer_id))->get();
+        $budgets = Budget::where(array('customer_id' => $customer_id, 'status' => 'active'))->get();
 
         if(!isset($budgets) || count($budgets)==0)
             return json_encode(array('message'=>'empty'));
@@ -32,8 +32,8 @@ class BudgetController extends Controller
     {
         $customer_id = $request->input('customer_id');
 
-        $budgetShares1 = BudgetShare::where(array('from_customer_id' => $customer_id))->with('budget')->with('toCustomer')->get();
-        $budgetShares2 = BudgetShare::where(array('to_customer_id' => $customer_id))->with('budget')->with('fromCustomer')->get();
+        $budgetShares1 = BudgetShare::where(array('from_customer_id' => $customer_id, 'status' => 'active'))->with('budget')->with('toCustomer')->get();
+        $budgetShares2 = BudgetShare::where(array('to_customer_id' => $customer_id, 'status' => 'active'))->with('budget')->with('fromCustomer')->get();
 
         if(isset($budgetShares1) && isset($budgetShares2))
             $budgetShares = array_merge($budgetShares1->toArray(), $budgetShares2->toArray());
@@ -145,7 +145,8 @@ class BudgetController extends Controller
                 array(
                     'from_customer_id' => $from_customer_id,
                     'to_customer_id' => $to_customer_id,
-                    'budget_id' => $budget_id
+                    'budget_id' => $budget_id,
+                    'status' => 'active'
                 )
             )->first();
 
@@ -245,5 +246,41 @@ class BudgetController extends Controller
         }
         else
             return json_encode(array('message' => 'invalid'));
+    }
+
+    public function removeBudget(Request $request)
+    {
+        $id = $request->input('id');
+
+        $budget = Budget::where('id' , $id)->first();
+
+        if(isset($budget)) {
+
+            $budget->status = 'removed';
+
+            $budget->save();
+
+            return json_encode(array('message' => 'removed'));
+        }
+        else
+            return json_encode(array('message'=>'notfound', 'id' => $id));
+    }
+
+    public function removeBudgetShare(Request $request)
+    {
+        $id = $request->input('id');
+
+        $budgetShare = BudgetShare::where('id' , $id)->first();
+
+        if(isset($budgetShare)) {
+
+            $budgetShare->status = 'removed';
+
+            $budgetShare->save();
+
+            return json_encode(array('message' => 'removed'));
+        }
+        else
+            return json_encode(array('message'=>'notfound', 'id' => $id));
     }
 }
