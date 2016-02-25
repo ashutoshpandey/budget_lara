@@ -38,28 +38,36 @@ class CustomerController extends Controller
 
     public function create(Request $request)
     {
-        $phone = $request->input('phone');
+        $deviceId = $request->input('device_id');
 
-        $customer = Customer::where('phone', $phone)->first();
+        $customer = Customer::where('device_id', $deviceId)->first();
 
-        if(!isset($customer)) {
+        if(isset($customer))
+            return json_encode(array('message' => 'existing', 'customer' => $customer));
+        else {
+            $phone = $request->input('phone');
 
-            $customer = new Customer;
+            $customer = Customer::where('phone', $phone)->first();
 
-            $customer->name = $request->input('name');
-            $customer->phone = $request->input('phone');
-            $customer->password = '';//$request->input('password');
-            $customer->photo = 'default';
-            $customer->status = 'active';
-            $customer->created_at = date('Y-m-d h:i:s');
-            $customer->updated_at = date('Y-m-d h:i:s');
+            if (!isset($customer)) {
 
-            $customer->save();
+                $customer = new Customer;
 
-            return json_encode(array('message' => 'done', 'customer' => $customer));
+                $customer->name = $request->input('name');
+                $customer->phone = $request->input('phone');
+                $customer->device_id = $request->input('device_id');
+                $customer->password = '';//$request->input('password');
+                $customer->photo = 'default';
+                $customer->status = 'active';
+                $customer->created_at = date('Y-m-d h:i:s');
+                $customer->updated_at = date('Y-m-d h:i:s');
+
+                $customer->save();
+
+                return json_encode(array('message' => 'done', 'customer' => $customer));
+            } else
+                return json_encode(array('message' => 'duplicate'));
         }
-        else
-            return json_encode(array('message' => 'duplicate'));
     }
 
     public function update(Request $request)
